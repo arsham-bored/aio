@@ -47,11 +47,13 @@ class Booster:
             await self.bot.wait_for('reaction_add', check=check)
             await ctx.send("got reaction")
 
+        except ValueError:
+            await self.send(ctx, discord.Embed(title="", description="please fill all fileds"))
+
         except Exception as error:
             logging.warning("not enough params to unpack")
             print(error)
-
-            await self.send(ctx, discord.Embed(title="", description="not enough parameters"))
+            return
         
     @staticmethod
     async def send(ctx, embed):
