@@ -1,10 +1,11 @@
 import discord
-import emoji
+import emojis
 import logging
 
 class Booster:
-    def __init__(self):
+    def __init__(self, bot):
         self.__count = 0 #keep as reference
+        self.bot = bot
 
     @property
     def count(self):
@@ -22,9 +23,11 @@ class Booster:
 
             armor, price, number_of_boost, realm, char = args
 
-            message = discord.Embed(title=f"{name} Boost", description=f"**Booster Cut:** {self.count} <:coin:764530376202518539>", color=0x28add1)
+            coin = emojis.custome.get(self.bot, emojis.custome.coin)
+
+            message = discord.Embed(title=f"{name} Boost", description=f"**Booster Cut:** {self.count} {coin}", color=0x28add1)
             message.add_field(name="Armor Stack", value=self.status(armor), inline=True)
-            message.add_field(name="\t\t\tBoost Price", value=f"{price} <:coin:764530376202518539>", inline=True)
+            message.add_field(name="\t\t\tBoost Price", value=f"{price} {coin}", inline=True)
             message.add_field(name="\t\t\tNumber of Boost", value=str(number_of_boost), inline=True)
             message.add_field(name="Realm", value=str(realm), inline=True)
             message.add_field(name="\t\t\tChar to whisper", value=f"{char}-{realm}", inline=True)
@@ -32,10 +35,17 @@ class Booster:
 
             post = await self.send(ctx, message)
 
-            await post.add_reaction()
-            await post.add_reaction()
-            await post.add_reaction()
+            await post.add_reaction(emojis.custome.get(self.bot, emojis.custome.shield))
+            await post.add_reaction(emojis.custome.get(self.bot, emojis.custome.health))
+            await post.add_reaction(emojis.custome.get(self.bot, emojis.custome.war))
+            await post.add_reaction(emojis.custome.get(self.bot, emojis.custome.leader))
 
+            
+            def check(reaction, user):
+                return user == ctx.author
+
+            await self.bot.wait_for('reaction_add', check=check)
+            await ctx.send("got reaction")
 
         except Exception as error:
             logging.warning("not enough params to unpack")
