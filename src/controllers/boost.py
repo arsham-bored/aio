@@ -32,9 +32,9 @@ class Booster:
 
             post = await self.send(ctx, message)
 
-            await post.add_reaction(discord.emoji)
-            await post.add_reaction(discord.emoji)
-            await post.add_reaction(discord.emoji)
+            await post.add_reaction()
+            await post.add_reaction()
+            await post.add_reaction()
 
 
         except Exception as error:

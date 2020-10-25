@@ -8,10 +8,10 @@ logging.basicConfig(level=logging.INFO)
 
 count = 0
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='!AIO')
 
 @bot.command(pass_context=True)
-async def AIO(ctx, *args):
+async def boost(ctx, *args):
     await booster.send_message(ctx, *args)
 
 if __name__ == "__main__":
