@@ -1,8 +1,10 @@
 import discord
 import emojis
+from controllers.base import Controller
 import logging
 
-class Booster:
+class Booster(Controller):
+
     def __init__(self, bot):
         self.__count = 0 #keep as reference
         self.bot = bot
@@ -33,7 +35,7 @@ class Booster:
             message.add_field(name="\t\t\tChar to whisper", value=f"{char}-{realm}", inline=True)
             message.add_field(name="\t\t\tAdvertiser", value=mention, inline=True)
 
-            post = await self.send(ctx, message)
+            post = await self.send_embed_message(ctx, message)
 
             await post.add_reaction(emojis.custome.get(self.bot, emojis.custome.shield))
             await post.add_reaction(emojis.custome.get(self.bot, emojis.custome.health))
@@ -48,13 +50,9 @@ class Booster:
             await ctx.send("got reaction")
 
         except ValueError:
-            await self.send(ctx, discord.Embed(title="", description="please fill all fileds"))
+            await self.send_embed_message(ctx, discord.Embed(title="", description="please fill all fileds"))
 
         except Exception as error:
             logging.warning("not enough params to unpack")
             print(error)
             return
-        
-    @staticmethod
-    async def send(ctx, embed):
-        return await ctx.message.channel.send(embed=embed)
