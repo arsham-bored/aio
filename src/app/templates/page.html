@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <title>AIO registery</title>
+  </head>
+  <body>
+    <div class="wrapper">
+
+        <form action="/registery/register" method="POST">
+
+            <div class="box required">
+                <label for="realm"
+                  >Main Character & Realm <br />
+                  (e.g. Hunterguy-Kazzak) CASE SENSITIVE</label
+                >
+        
+                <input type="text" name="realm" id="realm" placeholder="your answer" />
+              </div>
+        
+              <div class="box required">
+                <label for="roles">Class & Role(s) *</label>
+                <input type="text" name="roles" id="roles" placeholder="your answer" />
+              </div>
+        
+              <div class="box required">
+                <label for="userid"
+                  >Discord Username and Code <br />
+                  (e.g. Discordname#4932)</label
+                >
+                <input type="text" name="userid" id="userid" placeholder="your answer" />
+              </div>
+        
+              <div class="box required">
+                <label for="apply">Are you applying for raid or m+? (or both)</label>
+                <input type="text" name="apply" id="apply" placeholder="your answer" />
+              </div>
+        
+              <div class="box required">
+                <label for="raider">Link to your raider.io</label>
+                <input type="text" name="raider" id="raider" placeholder="your answer" />
+              </div>
+        
+              <div class="box required">
+                <label for="warcraft">Link your main's warcraftlogs</label>
+                <input type="text" name="warcraft" id="warcraft" placeholder="your answer" />
+              </div>
+        
+              <div class="box required">
+                <label
+                  >What armor classes can you boost with? (Your main + any geared
+                  alts)</label
+                >
+        
+                <div class="option">
+                  <label for="cloth">cloth</label>
+                  <input type="checkbox" id="cloth" name="cloth"/>
+                </div>
+        
+                <div class="option">
+                  <label for="cloth">cloth</label>
+                  <input type="checkbox" id="cloth" name="cloth"/>
+                </div>
+
+                <div class="option">
+                  <label for="cloth">cloth</label>
+                  <input type="checkbox" id="cloth" name="cloth"/>
+                </div>
+
+
+                <div class="option">
+                  <label for="cloth">cloth</label>
+                  <input type="checkbox" id="cloth" name="cloth"/>
+                </div>
+              </div>
+        
+              <div class="box">
+                <label for="referer"
+                  >Referrer (Their character-realm), leave blank if none</label
+                >
+                <input type="text" id="referer" placeholder="your answer" />
+              </div>
+        
+              <div class="box">
+                <label for="info">Any additional info</label>
+                <input type="text" id="info" placeholder="your answer" />
+              </div>
+        
+              <button class="submit">submit</button>
+        </form>
+
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
