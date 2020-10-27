@@ -24,7 +24,7 @@ class User(Base):
     is_cloth = Column(Boolean)
     is_plate = Column(Boolean)
     is_leather = Column(Boolean)
-    mail = Column(Boolean)
+    is_mail = Column(Boolean)
 
     referer = Column(String)
     info = Column(String)
