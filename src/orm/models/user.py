@@ -1,21 +1,30 @@
-from engine import Base, session
-from sqlalchemy import Column, Integer, String
+from ..engine import Base, session
+from sqlalchemy import Column, Integer, String, Boolean
 import logging
 
 
-class UserScore(Base):
+class User(Base):
     __tablename__ = "score"
 
-    def __init__(self, user_id, chat_id):
-        super(UserScore, self).__init__()
+    def __init__(self):
+        super(User, self).__init__()
 
     id = Column(Integer, primary_key=True)
     username = Column(String)
     realm = Column(String)
     role = Column(String)
 
-    
+    is_raider = Column(Boolean)
+    is_m = Column(Boolean)
 
+    raider_link = Column(String)
 
-    def __repr__(self):
-        return f"user: {self.user_id} from chat {self.chat_id} with score {self.score}"
+    warcraft = Column(String)
+
+    is_cloth = Column(Boolean)
+    is_plate = Column(Boolean)
+    is_leather = Column(Boolean)
+    mail = Column(Boolean)
+
+    referer = Column(String)
+    info = Column(String)

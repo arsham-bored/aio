@@ -4,7 +4,7 @@ from flask import (
     request
 )
 
-from controller.registery import Registery
+from ..controller.registery import Registery
 
 registery_router = Blueprint(
     "registery",

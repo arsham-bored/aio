@@ -1,5 +1,5 @@
 from flask import Flask
-from routes.registery import registery_router
+from .routes.registery import registery_router
 
 def create_app():
 
