@@ -1,5 +1,6 @@
 from flask import Flask
 from .routes.registery import registery_router
+from ..orm.engine import migrate
 
 def create_app():
 
@@ -12,5 +13,6 @@ def create_app():
 
 
 if __name__ == "__main__":
+    migrate()
     app = create_app()
     app.run()

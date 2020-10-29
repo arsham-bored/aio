@@ -66,6 +66,7 @@ label {
 
 .option input {
     transform: scale(1.5);
+    margin-right: 10px;
 }
 
 .wrapper {
@@ -77,11 +78,80 @@ label {
 }
 
 .submit {
-    color: white;
     width: 7vw;
     min-width: 200px;
     height: 3rem;
-    color: #272727;
+    color: #009d00;
+    background: none;
+    border: solid #009d00 1px;
+    border-radius: 4px;
     text-align: center;
     font-size: 2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.alert {
+    color: tomato;
+    font-family: sans-serif;
+    margin-top: 1.2rem;
+}
+
+.wrapper form .fields {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.container {
+    margin: 0 20px;
+
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+button.submit {
+    margin: 0 auto;
+    margin-top: 3vh;
+    transition: background-color 1000ms linear;
+}
+
+button.submit:focus {
+    background-color: #009d00;
+}
+
+.status {
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.ok {
+    width: 70vw;
+    height: 25vw;
+    max-width: 200px;
+    max-height: 150px;
+    display: flex;
+    flex-direction: center;
+    justify-content: center;
+    border-radius: 14px;
+}
+
+.ok img {
+    width: 48px;
+    margin: 0 auto;
+}
+
+.center {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-content: center;
 }

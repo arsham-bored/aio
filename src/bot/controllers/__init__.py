@@ -1,1 +1,1 @@
-from controllers.boost import Booster
+from .boost import Booster

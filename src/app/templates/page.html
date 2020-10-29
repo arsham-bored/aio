@@ -8,89 +8,124 @@
   </head>
   <body>
     <div class="wrapper">
+      <form action="/registery/register" method="POST">
+        <div class="fields">
+          <div class="container">
+            <div class="box required">
+              <label for="realm"
+                >Main Character & Realm <br />
+                (e.g. Hunterguy-Kazzak) CASE SENSITIVE</label
+              >
 
-        <form action="/registery/register" method="POST">
+              <input
+                type="text"
+                id="realm"
+                name="realm"
+                placeholder="your answer"
+                required
+              />
+            </div>
 
             <div class="box required">
-                <label for="realm"
-                  >Main Character & Realm <br />
-                  (e.g. Hunterguy-Kazzak) CASE SENSITIVE</label
-                >
-        
-                <input type="text" name="realm" id="realm" placeholder="your answer" />
-              </div>
-        
-              <div class="box required">
-                <label for="roles">Class & Role(s) *</label>
-                <input type="text" name="roles" id="roles" placeholder="your answer" />
-              </div>
-        
-              <div class="box required">
-                <label for="userid"
-                  >Discord Username and Code <br />
-                  (e.g. Discordname#4932)</label
-                >
-                <input type="text" name="userid" id="userid" placeholder="your answer" />
-              </div>
-        
-              <div class="box required">
-                <label for="apply">Are you applying for raid or m+? (or both)</label>
-                <input type="text" name="apply" id="apply" placeholder="your answer" />
-              </div>
-        
-              <div class="box required">
-                <label for="raider">Link to your raider.io</label>
-                <input type="text" name="raider" id="raider" placeholder="your answer" />
-              </div>
-        
-              <div class="box required">
-                <label for="warcraft">Link your main's warcraftlogs</label>
-                <input type="text" name="warcraft" id="warcraft" placeholder="your answer" />
-              </div>
-        
-              <div class="box required">
-                <label
-                  >What armor classes can you boost with? (Your main + any geared
-                  alts)</label
-                >
-        
-                <div class="option">
-                  <label for="cloth">cloth</label>
-                  <input type="checkbox" id="cloth" name="cloth"/>
-                </div>
-        
-                <div class="option">
-                  <label for="cloth">cloth</label>
-                  <input type="checkbox" id="cloth" name="cloth"/>
-                </div>
+              <label for="roles">Class & Role(s) *</label>
+              <input
+                type="text"
+                id="roles"
+                name="roles"
+                placeholder="your answer"
+                required
+              />
+            </div>
 
-                <div class="option">
-                  <label for="cloth">cloth</label>
-                  <input type="checkbox" id="cloth" name="cloth"/>
-                </div>
+            <div class="box required">
+              <label for="userid"
+                >Discord Username and Code <br />
+                (e.g. Discordname#4932)</label
+              >
+              <input
+                type="text"
+                id="userid"
+                name="userid"
+                placeholder="your answer"
+                required
+              />
+            </div>
 
+            <div class="box required">
+              <label for="apply"
+                >Are you applying for raid or m+? (or both)</label
+              >
 
-                <div class="option">
-                  <label for="cloth">cloth</label>
-                  <input type="checkbox" id="cloth" name="cloth"/>
-                </div>
+              <div class="option">
+                <input type="checkbox" name="m+" id="m" />
+                <label for="m">m+</label>
               </div>
-        
-              <div class="box">
-                <label for="referer"
-                  >Referrer (Their character-realm), leave blank if none</label
-                >
-                <input type="text" id="referer" placeholder="your answer" />
-              </div>
-        
-              <div class="box">
-                <label for="info">Any additional info</label>
-                <input type="text" id="info" placeholder="your answer" />
-              </div>
-        
-              <button class="submit">submit</button>
-        </form>
 
+              <div class="option">
+                <input type="checkbox" name="raider" id="raider" />
+                <label for="raider">raider</label>
+              </div>
+
+              <div class="alert hidden">* this field is required</div>
+            </div>
+          </div>
+
+          <div class="container">
+            <div class="box required">
+              <label for="raider">Link to your raider.io</label>
+              <input type="text" id="raider" name="raider-link" placeholder="your answer" />
+            </div>
+
+            <div class="box required">
+              <label for="warcraft">Link your main's warcraftlogs</label>
+              <input type="text" id="warcraft" name="warcraft" placeholder="your answer" />
+            </div>
+
+            <div class="box required">
+              <label
+                >What armor classes can you boost with? (Your main + any geared
+                alts)</label
+              >
+
+              <div class="option">
+                <input type="checkbox" name="cloth" id="cloth" />
+                <label for="cloth">cloth</label>
+              </div>
+
+              <div class="option">
+                <input type="checkbox" name="plate" id="plate" />
+                <label for="plate">plate</label>
+              </div>
+
+              <div class="option">
+                <input type="checkbox" name="leather" id="leather" />
+                <label for="leather">leather</label>
+              </div>
+
+              <div class="option">
+                <input type="checkbox" name="mail" id="mail" />
+                <label for="mail">mail</label>
+              </div>
+
+              <div class="alert hidden">* this field is required</div>
+            </div>
+
+            <div class="box">
+              <label for="referer"
+                >Referrer (Their character-realm), leave blank if none</label
+              >
+              <input type="text" id="referer" name="referer" placeholder="your answer" />
+            </div>
+
+            <div class="box">
+              <label for="info">Any additional info</label>
+              <input type="text" id="info" name="info" placeholder="your answer" />
+            </div>
+          </div>
+        </div>
+
+        <button class="submit">sing up</button>
+      </form>
     </div>
 
     <script src="/static/app.js"></script>

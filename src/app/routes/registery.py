@@ -19,3 +19,7 @@ def register():
         return render_template('page.html')
 
     return controller.register_user(request)
+
+@registery_router.route("/registery/register/succes")
+def success():
+    return render_template("ok.html")

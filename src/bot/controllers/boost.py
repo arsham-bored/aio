@@ -1,6 +1,6 @@
 import discord
-import emojis
-from controllers.base import Controller
+from .. import emojis
+from .base import Controller
 import logging
 
 class Booster(Controller):

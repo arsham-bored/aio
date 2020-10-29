@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
-from config import Config
-from controllers import Booster
+from .config import Config
+from .controllers import Booster
 import logging
 
 logging.basicConfig(level=logging.INFO)

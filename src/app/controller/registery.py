@@ -1,6 +1,11 @@
 from flask import Request
+from flask import (
+    render_template,
+    redirect,
+    url_for
+)
 from ...orm.models.user import User
-
+from ...orm.engine import session
 
 class Registery:
 
@@ -25,7 +30,10 @@ class Registery:
 
     @staticmethod
     def form_is_empty(request: Request):
-        return len(request.form.to_dict()) < 4
+        print(request.form)
+        print(request.form.to_dict())
+        print(len(request.form.to_dict()))
+        return len(request.form.to_dict()) < 3
 
     def register_user(self, request: Request):
         realm = request.form.get("realm", None)
@@ -33,8 +41,8 @@ class Registery:
         userid = request.form.get("userid", None)
         raider = request.form.get("raider", None)
         warcraft = request.form.get("warcraft", None)
-        referer = request.form.get("referer", None)
-        info = request.form.get("info", None)
+        referer = request.form.get("referer", "")
+        info = request.form.get("info", "")
         armor = self.Armor(request)
         apply = self.Apply(request)
         
@@ -57,8 +65,17 @@ class Registery:
         user.is_mail = armor.mail
         
         # save to database
+        session.add(user)
+        session.commit()
+        print(user)
 
-        return "got data."
+        print(
+            session.query(User).filter(
+                User.username == userid
+            ).all()
+        )
+
+        return redirect(url_for("registery.success"))
 
         
 

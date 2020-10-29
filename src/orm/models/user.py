@@ -4,7 +4,7 @@ import logging
 
 
 class User(Base):
-    __tablename__ = "score"
+    __tablename__ = "user"
 
     def __init__(self):
         super(User, self).__init__()
