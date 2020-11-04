@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
-from .config import Config
 from .controllers import Booster
+from .. import config
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -18,4 +18,4 @@ async def boost(ctx, *args):
 
 if __name__ == "__main__":
     logging.info("bot started.")
-    bot.run(Config().token)
+    bot.run(config.token)

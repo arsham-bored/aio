@@ -1,5 +1,5 @@
-from flask import Blueprint
-from flask import (
+from quart import Blueprint
+from quart import (
     render_template,
     request
 )
@@ -12,14 +12,19 @@ registery_router = Blueprint(
 
 controller = Registery()
 
-@registery_router.route("/registery/register", methods=["GET", "POST"])
-def register():
+@registery_router.route("/register", methods=["GET", "POST"])
+async def register():
 
-    if controller.form_is_empty(request):
-        return render_template('page.html')
+    
+    if request.method == "GET":
+        return await render_template('page.html')
 
-    return controller.register_user(request)
+    return await controller.register_user(request)
 
-@registery_router.route("/registery/register/succes")
-def success():
-    return render_template("ok.html")
+@registery_router.route("/register/succes")
+async def success():
+    return await render_template("ok.html")
+
+@registery_router.route("/register/fail")
+async def fail():
+    return await render_template("failed.html")

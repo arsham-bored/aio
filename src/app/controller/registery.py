@@ -1,11 +1,12 @@
-from flask import Request
-from flask import (
+from quart import Request
+from quart import (
     render_template,
     redirect,
     url_for
 )
 from ...orm.models.user import User
 from ...orm.engine import session
+from ..utility import RaiderScrapper
 
 class Registery:
 
@@ -15,67 +16,93 @@ class Registery:
             return True if state == 'on' else False
 
     class Armor(Option):
-        def __init__(self, request: Request):
-            self.cloth = self.to_boolean(request.form.get('cloth', False))
-            self.plate = self.to_boolean(request.form.get('plate', False))
-            self.leather = self.to_boolean(request.form.get('leather', False))
-            self.mail = self.to_boolean(request.form.get('mail', False))
+        def __init__(self, request: Request, form):
+
+            self.cloth = self.to_boolean(form.get('cloth', False))
+            self.plate = self.to_boolean(form.get('plate', False))
+            self.leather = self.to_boolean(form.get('leather', False))
+            self.mail = self.to_boolean(form.get('mail', False))
 
 
     class Apply(Option):
-        def __init__(self, request: Request):
-            self.raider = self.to_boolean(request.form.get('raider', False))
-            self.m = self.to_boolean(request.form.get('m', False))
+        def __init__(self, request: Request, form):
+            
+            self.raider = self.to_boolean(form.get('raider', False))
+            self.m = self.to_boolean(form.get('m', False))
 
 
-    @staticmethod
-    def form_is_empty(request: Request):
-        print(request.form)
-        print(request.form.to_dict())
-        print(len(request.form.to_dict()))
-        return len(request.form.to_dict()) < 3
+    async def register_user(self, request: Request):
+        form = await request.form
 
-    def register_user(self, request: Request):
-        realm = request.form.get("realm", None)
-        roles = request.form.get("roles", None)
-        userid = request.form.get("userid", None)
-        raider = request.form.get("raider", None)
-        warcraft = request.form.get("warcraft", None)
-        referer = request.form.get("referer", "")
-        info = request.form.get("info", "")
-        armor = self.Armor(request)
-        apply = self.Apply(request)
-        
+        try:
+            print(form)
 
-        user = User()
+            realm = form.get("realm", "")
+            roles = form.get("roles", "")
+            userid = form.get("userid", None)
+            raider = form.get("raider-link", None)
+            warcraft = form.get("warcraft", "")
+            referer = form.get("referer", "")
+            info = form.get("info", "")
+            armor = self.Armor(request, form)
+            apply = self.Apply(request, form)
 
-        user.username = userid
-        user.realm = realm
-        user.role = roles
-        user.raider_link = raider
-        user.warcraft = warcraft
-        user.referer = referer
-        user.info = info
+            scraper = RaiderScrapper(raider)
+            data = await scraper.get_content()
+            parser = scraper.parse(data)
 
-        user.is_m = apply.m
-        user.is_raider = apply.raider
-        user.is_cloth = armor.cloth
-        user.is_leather = armor.leather
-        user.is_plate = armor.plate
-        user.is_mail = armor.mail
-        
-        # save to database
-        session.add(user)
-        session.commit()
-        print(user)
+            raider_name = parser.name
+            raider_score = parser.score
 
-        print(
-            session.query(User).filter(
-                User.username == userid
+            username, user_id = realm.split("-")
+
+            query = session.query(User).filter(
+                User.username == username
             ).all()
-        )
 
-        return redirect(url_for("registery.success"))
+            print(query)
+
+            if not len(query) == 0:
+                print("yes")
+                return redirect(url_for("registery.fail"))
+
+            print(raider_name, username)
+            print(raider_name == username)
+
+            if raider_name == username:
+                
+                print("tes")
+
+                user = User()
+
+                user.username = userid
+                user.realm = realm
+                user.role = roles
+                user.raider_link = raider
+                user.warcraft = warcraft
+                user.referer = referer
+                user.info = info
+
+                user.is_m = apply.m
+                user.is_raider = apply.raider
+                user.is_cloth = armor.cloth
+                user.is_leather = armor.leather
+                user.is_plate = armor.plate
+                user.is_mail = armor.mail
+                
+                user.score = raider_score
+
+                # save to database
+                session.add(user)
+                session.commit()
+
+                return redirect(url_for("registery.success"))
+
+            return redirect(url_for("registery.fail"))
+
+        except Exception as error:
+            print(error)
+            return redirect(url_for("registery.fail"))
 
         
 
