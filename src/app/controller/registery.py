@@ -90,7 +90,7 @@ class Registery:
                 user.is_plate = armor.plate
                 user.is_mail = armor.mail
                 
-                user.score = raider_score
+                user.score = raider_score if raider_score is not None else 0
 
                 # save to database
                 session.add(user)

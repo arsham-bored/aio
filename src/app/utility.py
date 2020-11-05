@@ -16,7 +16,12 @@ class RaiderScrapper:
 
         @property
         def score(self):
-            return self.bs.select_one("#content > div > div.slds-size--8-of-8 > div > div:nth-child(3) > section:nth-child(5) > div:nth-child(4) > div > div:nth-child(2) > table > thead > tr > th:nth-child(1) > span > span > span").text
+            try:
+                element = self.bs.select_one("#content > div > div.slds-size--8-of-8 > div > div:nth-child(3) > section:nth-child(5) > div:nth-child(4) > div > div:nth-child(2) > table > thead > tr > th:nth-child(1) > span > span > span")
+                return element.text
+
+            except:
+                return 
 
     async def get_content(self):    
         """ Load website content """
