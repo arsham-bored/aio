@@ -1,4 +1,29 @@
+from datetime import datetime
 from . import emojis
+
+class UserBoostStorage:
+    users = {}
+
+    @classmethod
+    def add(cls, user):
+        cls.users.update({ str(user): datetime.now() })
+
+    @classmethod
+    def is_allowed(cls, user):
+        now = datetime.now()
+        last_boost_time: datetime = cls.users.get(user, default=None)
+
+        if last_boost_time is None:
+            # user does not exist in memory
+            return True
+
+        difference = now - last_boost_time
+
+        if difference.total_seconds() > 30:
+            return True
+
+        return False
+    
 
 class BoosterStorage:
     def __init__(self, helmet, health, war):
@@ -113,4 +138,4 @@ class BoosterStorage:
 
         except Exception as error:
             print(error)
-        
+    
