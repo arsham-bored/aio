@@ -165,6 +165,7 @@ class Booster(Controller):
                         continue
                     
                     current_user = query[0]
+                    print(current_user.score)
 
                     if leader_user is None:
                         leader_user = current_user
