@@ -152,6 +152,28 @@ class Booster(Controller):
 
                 boosters_as_text = []
 
+                leader_user = None
+
+                for user, _, _ in boosters:
+
+                    query = session.query(User).filter(
+                        User.username == str(user)
+                    ).all()
+
+                    if len(query) == 0:
+                        print("not registered, score action")
+                        continue
+                    
+                    current_user = query[0]
+                    print(current_user.score)
+
+                    if leader_user is None:
+                        leader_user = current_user
+                        continue
+
+                    if current_user.score > leader_user.score:
+                        leader_user = current_user
+                    
 
                 for user, code, is_leader in boosters:
 
@@ -163,8 +185,13 @@ class Booster(Controller):
                         print("not registered")
                         continue
 
+                    is_leader = query[0] == leader_user
+
+                    print("leader check")
+                    print("status: ")
+
                     boosters_as_text.append(
-                        f"{code} {user.mention} | {query[0].realm} {self.key if str(key_user) == str(user) else ''}")
+                        f"{code} {user.mention} | {query[0].realm} {self.leader if is_leader else ''} {self.key if str(key_user) == str(user) else ''}")
 
                 if len(boosters_as_text) == 0:
                     boosters_as_text = "nope."
@@ -181,9 +208,9 @@ class Booster(Controller):
         message.add_field(
             name="\u200b", value=f"**Boostid**: `{self.__count}`", inline=True)
 
-        currenct_time = datetime.now()
+        currenct_time = datetime.now().strftime("%H:%M:%S")
         message.add_field(
-            name="\u200b", value=f"**Today {currenct_time.hour}:{currenct_time.minute}:{currenct_time.second}**", inline=True)
+            name="\u200b", value=f"**Today {currenct_time}**", inline=True)
         message.add_field(
             name="\t\t\u200b", value=f"{self.brand} All-inOne community", inline=False)
 
@@ -426,7 +453,7 @@ class Booster(Controller):
                     if message.content.startswith('/done'):
 
                         boost_id = int(message.content.replace("/done ", ""))
-
+""" 
                         if boost_id == self.__count:
 
                             for user, _, _ in storage.volunteers:
@@ -435,7 +462,7 @@ class Booster(Controller):
 
                                 except Exception:
                                     pass
-
+ """
                             await memory.channel.delete()
                             await memory.role.delete()
 

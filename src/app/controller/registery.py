@@ -69,7 +69,7 @@ class Registery:
             print(raider_name, username)
             print(raider_name == username)
 
-            if raider_name == username:
+            if raider_name.lower() == username.lower():
                 
                 print("tes")
 
@@ -90,7 +90,17 @@ class Registery:
                 user.is_plate = armor.plate
                 user.is_mail = armor.mail
                 
-                user.score = raider_score if raider_score is not None else 0
+<<<<<<< HEAD
+                raider_score = raider_score.replace(",")
+                raider_score = int(raider_score)
+
+                user.score = raider_score
+=======
+                raider_score = raider_score.replace(",")
+                raider_score = int(raider_score)
+
+                user.score = raider_score
+>>>>>>> feature/memory
 
                 # save to database
                 session.add(user)

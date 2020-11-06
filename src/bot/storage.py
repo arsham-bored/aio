@@ -1,4 +1,29 @@
+from datetime import datetime
 from . import emojis
+
+class UserBoostStorage:
+    users = {}
+
+    @classmethod
+    def add(cls, user):
+        cls.users.update({ str(user): datetime.now() })
+
+    @classmethod
+    def is_allowed(cls, user):
+        now = datetime.now()
+        last_boost_time: datetime = cls.users.get(user, default=None)
+
+        if last_boost_time is None:
+            # user does not exist in memory
+            return True
+
+        difference = now - last_boost_time
+
+        if difference.total_seconds() > 30:
+            return True
+
+        return False
+    
 
 class BoosterStorage:
     def __init__(self, helmet, health, war):
@@ -78,23 +103,51 @@ class BoosterStorage:
 
     def helmet_volunteer(self):
         if len(self.data[self.helmet]) > 0:
-            user, is_leader = self.data[self.helmet][0]
-            return [(user, self.helmet, is_leader)]
+            while True:
+                user, is_leader = self.data[self.helmet][0]
+
+                if not UserBoostStorage.is_allowed(user):
+                    self.remove_user(user)
+                    continue
+
+                if UserBoostStorage.is_allowed(user):
+                    return [(user, self.helmet, is_leader)]
 
         return []
 
     def health_volunteer(self):
         if len(self.data[self.health]) > 0:
-            user, is_leader = self.data[self.health][0]
-            return [(user, self.health, is_leader)]
+            while True:
+                user, is_leader = self.data[self.health][0]
+
+                if not UserBoostStorage.is_allowed(user):
+                    self.remove_user(user)
+                    continue
+
+                if UserBoostStorage.is_allowed(user):
+                    return [(user, self.health, is_leader)]
 
         return []
 
     def war_volunteer(self):
         if len(self.data[self.war]) > 0:
-            boosters = self.data[self.war][:2]
-            return [(user, self.war, is_leader) for user, is_leader in boosters]
 
+            valids = []
+
+            while True:
+                boosters = self.data[self.war][:2]
+
+                for user in boosters:
+                    if not UserBoostStorage.is_allowed(user):
+                        self.remove_user(user)
+
+                    else:
+                        valids.append(user)
+                    
+
+                if len(valids) == 2:
+                    return [(user, self.war, False) for user in valids]
+        
         return []
 
     @property
@@ -113,4 +166,4 @@ class BoosterStorage:
 
         except Exception as error:
             print(error)
-        
+    
