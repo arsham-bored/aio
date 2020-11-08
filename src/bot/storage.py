@@ -1,5 +1,6 @@
 from datetime import datetime
 from . import emojis
+from .. import config
 
 class UserBoostStorage:
     users = {}
@@ -27,7 +28,7 @@ class UserBoostStorage:
 
         difference = now - last_boost_time
 
-        if difference.total_seconds() > 120:
+        if difference.total_seconds() > config.limit_time:
             print(f"{user} allowed")
             return True
 
@@ -57,7 +58,7 @@ class BoosterStorage:
 
     def add(self, user, code, is_leader):
 
-        if str(user) == "Jaina Proudmore boost#0365":
+        if str(user) == config.name:
             return
 
         self.remove_user(user)
@@ -67,7 +68,7 @@ class BoosterStorage:
 
     def add_key(self, user):
 
-        if str(user) == "Jaina Proudmore boost#0365":
+        if str(user) == config.name:
             return
 
         if user in self.key_:

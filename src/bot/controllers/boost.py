@@ -3,6 +3,7 @@ from discord import Color
 from discord.ext import tasks
 from datetime import datetime
 import asyncio
+from ... import config
 from ...orm.engine import session
 from ...orm.models.user import User
 from .. import emojis
@@ -386,10 +387,6 @@ class Booster(Controller):
 
                 while True:
 
-                    if memory.triggered:
-                        print("lost loop")
-                        break
-
                     reaction, user = await self.bot.wait_for('reaction_add', check=check)
 
                     if reaction.emoji in self.boost_items:
@@ -440,7 +437,6 @@ class Booster(Controller):
                                     await post.edit(embed=new_message)
 
                                     memory.timer_stop = True
-                                    memory.triggered = True
 
                                 memory.last_stage = True
 
@@ -448,10 +444,7 @@ class Booster(Controller):
 
                             print(f"status: {memory.triggered}")
 
-                            if not first_time:
-                                if memory.triggered:
-                                    print("trigger done.")
-                                    break
+                            if True:
 
                                 if user == ctx.author:
                                     print("trigger button")
@@ -464,6 +457,8 @@ class Booster(Controller):
                                     new_message = await generate_message(message_data, *args)
 
                                     user_memory = message_data.memory
+
+                                    print("trigger .. .. ..")
 
                                     await post.edit(embed=new_message)
 
@@ -551,7 +546,7 @@ class Booster(Controller):
 
                     if not memory.triggered:
                         if not memory.timer_stop:
-                            if self.Timer.get_difference(memory.now) > 120:
+                            if self.Timer.get_difference(memory.now) > config.boost_time:
                                 print("tik")
                                 message_data = self.Message(
                                     ctx, storage, storage.volunteers

@@ -20,3 +20,15 @@ class Config:
     @property
     def token(self):
         return self.body['token']
+
+    @property
+    def boost_time(self):
+        return self.body['time']['boost']
+
+    @property
+    def limit_time(self):
+        return self.body['time']['limit_time']
+
+    @property
+    def name(self):
+        return self.body['name']
