@@ -57,7 +57,7 @@ class BoosterStorage:
 
     def add(self, user, code, is_leader):
 
-        if str(user) == "AllinOne#0365":
+        if str(user) == "Jaina Proudmore boost#0365":
             return
 
         self.remove_user(user)
@@ -67,7 +67,7 @@ class BoosterStorage:
 
     def add_key(self, user):
 
-        if str(user) == "AllinOne#0365":
+        if str(user) == "Jaina Proudmore boost#0365":
             return
 
         if user in self.key_:
