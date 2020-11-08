@@ -9,19 +9,30 @@ class UserBoostStorage:
         cls.users.update({ str(user): datetime.now() })
 
     @classmethod
+    def remove(cls, user):
+        if str(user) in cls.users:
+            print("remove user")
+            del cls.users[str(user)]
+
+    @classmethod
     def is_allowed(cls, user):
+        user = str(user)
         now = datetime.now()
-        last_boost_time: datetime = cls.users.get(user, default=None)
+        last_boost_time: datetime = cls.users.get(user, None)
 
         if last_boost_time is None:
+            print(f"{user} allowed, beacause not exists in memory")
             # user does not exist in memory
             return True
 
         difference = now - last_boost_time
 
-        if difference.total_seconds() > 30:
+        if difference.total_seconds() > 120:
+            print(f"{user} allowed")
             return True
 
+
+        print(f"{user} not allowed")
         return False
     
 
@@ -39,15 +50,25 @@ class BoosterStorage:
 
         self.key_ = []
 
+        self.pre = []
+
     class BoosterNotReady(IndexError):
         pass
 
     def add(self, user, code, is_leader):
+
+        if str(user) == "Allinone2#0526":
+            return
+
         self.remove_user(user)
         self.data[code].append((user, is_leader))
+        print("adding user", str(user))
 
 
     def add_key(self, user):
+
+        if str(user) == "Allinone2#0526":
+            return
 
         if user in self.key_:
             self.key_.remove(user)
@@ -56,6 +77,14 @@ class BoosterStorage:
         else:
             self.key_.append(user)
             return
+
+    def remove_key_user(self, user):
+        if user in self.key_:
+            print("delething key user: ", str(user))
+            self.key_.remove(user)
+
+            print("next volunteers: \n")
+            print("".join(f"{user}\n" for user in self.key_))
 
     @property
     def key(self):
@@ -75,6 +104,13 @@ class BoosterStorage:
             for pre_user, pre_is_leader in users:
                 if pre_user == user:
                     users.remove((pre_user, pre_is_leader))
+                
+
+    def remove_pre(self, user):
+            for pre_user, icon, _ in self.pre:
+                if pre_user == user:
+                    print(f"deleting user {user}")
+                    self.pre.remove((pre_user, icon, _))
 
     async def remove_from_health(self):
         try:
@@ -101,10 +137,48 @@ class BoosterStorage:
             return
 
 
+    def pre_get_user(self, code):
+        return [user for user, code_, is_leader in self.pre if code == code_]
+
+    async def pre_remove_from_health(self):
+        for index, (user, code, _) in enumerate(self.pre):
+            if code == self.health:
+                print("delet user ..")
+                print("before: ", self.pre)
+                del self.pre[index]
+
+                print("after: ", self.pre)
+
+    async def pre_remove_from_helmet(self):
+        for index, (user, code, _) in enumerate(self.pre):
+            if code == self.helmet:
+                del self.pre[index]
+
+    async def pre_remove_from_war(self):
+        for index, (user, code, _) in enumerate(self.pre):
+            if code == self.war:
+                del self.pre[index]
+
+    async def pre_remove_second_from_war(self):
+        second = False
+
+        for index, (user, code, _) in enumerate(self.pre):
+            if code == self.war:
+                if second:
+                    print("delete second dps user")
+                    del self.pre[index]
+                else:
+                    print("going for second user")
+                    second = True
+
     def helmet_volunteer(self):
         if len(self.data[self.helmet]) > 0:
             while True:
+                if len(self.data[self.helmet]) == 0:
+                    return []
+
                 user, is_leader = self.data[self.helmet][0]
+
 
                 if not UserBoostStorage.is_allowed(user):
                     self.remove_user(user)
@@ -118,7 +192,11 @@ class BoosterStorage:
     def health_volunteer(self):
         if len(self.data[self.health]) > 0:
             while True:
+                if len(self.data[self.health]) == 0:
+                    return []
+
                 user, is_leader = self.data[self.health][0]
+
 
                 if not UserBoostStorage.is_allowed(user):
                     self.remove_user(user)
@@ -134,19 +212,12 @@ class BoosterStorage:
 
             valids = []
 
-            while True:
-                boosters = self.data[self.war][:2]
+            for user, is_leader in self.data[self.war]:
+                if UserBoostStorage.is_allowed(user):
+                    print(f"adding user: {user}")
+                    valids.append(user)
 
-                for user in boosters:
-                    if not UserBoostStorage.is_allowed(user):
-                        self.remove_user(user)
-
-                    else:
-                        valids.append(user)
-                    
-
-                if len(valids) == 2:
-                    return [(user, self.war, False) for user in valids]
+            return [(user, self.war, False) for user in valids[:2]]
         
         return []
 
@@ -156,6 +227,12 @@ class BoosterStorage:
             helmet = self.helmet_volunteer()
             health = self.health_volunteer()
             war = self.war_volunteer()
+
+            print(
+                helmet,
+                health,
+                war
+            )
 
             return [*helmet, *health, *war]
 

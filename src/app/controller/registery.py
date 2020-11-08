@@ -90,17 +90,14 @@ class Registery:
                 user.is_plate = armor.plate
                 user.is_mail = armor.mail
                 
-<<<<<<< HEAD
-                raider_score = raider_score.replace(",")
-                raider_score = int(raider_score)
+                if raider_score is not None:
+                    raider_score = raider_score.replace(",", "")
+                    raider_score = float(raider_score)
 
-                user.score = raider_score
-=======
-                raider_score = raider_score.replace(",")
-                raider_score = int(raider_score)
+                    user.score = raider_score
 
-                user.score = raider_score
->>>>>>> feature/memory
+                else:
+                    user.score = 0
 
                 # save to database
                 session.add(user)
