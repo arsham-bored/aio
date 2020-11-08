@@ -489,7 +489,7 @@ class Booster(Controller):
                     reaction, user = await self.bot.wait_for('reaction_add', check=panel_check)
 
                     if reaction.emoji == self.health_cross:
-                        if str(user) != "Allinone2#0526":
+                        if str(user) != "AllinOne#0365":
                             print("go message")
                             if user == ctx.author:
 
@@ -504,7 +504,7 @@ class Booster(Controller):
                                     continue
 
                     if reaction.emoji == self.helmet_cross:
-                        if str(user) != "Allinone2#0526":
+                        if str(user) != "AllinOne#0365":
                             if user == ctx.author:
 
                                 tanks = storage.pre_get_user(self.helmet)
@@ -518,7 +518,7 @@ class Booster(Controller):
                                     continue
 
                     if reaction.emoji == self.war_cross:
-                        if str(user) != "Allinone2#0526":
+                        if str(user) != "AllinOne#0365":
                             if user == ctx.author:
                                 dpss = storage.pre_get_user(self.war)
 
@@ -531,7 +531,7 @@ class Booster(Controller):
                                     continue
 
                     if reaction.emoji == self.war_double_cross:
-                        if str(user) != "Allinone2#0526":
+                        if str(user) != "AllinOne#0365":
                             if user == ctx.author:
                                 dpss = storage.pre_get_user(self.war)
 
