@@ -1,3 +1,4 @@
+from typing import List
 import discord
 from discord import Color
 from discord.ext import tasks
@@ -5,12 +6,15 @@ from datetime import datetime
 import asyncio
 from ... import config
 from ...orm.engine import session
-from ...orm.models.user import User
+from ...orm.models.user import User, get_user
+from ...orm.models.boost import Boost
+from ...orm.models.transaction import Transaction
 from .. import emojis
 from ..storage import (
     BoosterStorage,
     UserBoostStorage
 )
+from ..utils import to_k
 from .base import Controller
 import logging
 import uuid
@@ -26,7 +30,10 @@ class Booster(Controller):
         self.cancel = emojis.general.cancel
         self.lock = emojis.general.lock
         self.voice = emojis.general.voice
-        self.count = 0
+
+        query: List[Boost] = session.query(Boost).order_by(Boost.id.desc()).limit(1).all()
+
+        self.count = query[0].id
 
     class Message:
         def __init__(self, ctx, storage=None, boosters=None):
@@ -63,6 +70,8 @@ class Booster(Controller):
             self.done = False
             self.last_stage = False
             self.count = None
+            self.key_user = None
+            self.reactions = []
 
     @staticmethod
     def status(armor: str):
@@ -109,6 +118,20 @@ class Booster(Controller):
         memory.timer_stop = False
         memory.triggered = False
 
+        print(str(ctx.author))
+
+        advertiser_registery = session.query(User).filter(
+            User.username == str(ctx.author)
+        ).all()
+
+        print(advertiser_registery)
+
+        if len(advertiser_registery) == 0:
+            await ctx.send(f"{ctx.author.name}, please register before any boost commit.")
+            return 
+
+        advertiser_user: User = advertiser_registery[0]
+
         async def generate_message(data: self.Message, *args) -> discord.Embed:
 
             print("update boost message")
@@ -153,11 +176,11 @@ class Booster(Controller):
             message = discord.Embed(title=f"{ctx.author.name}'s Boost",
                                     description=f"**{key}{' - ' if key != '' else ''} {name.capitalize()}**", color=Color.orange())
             message.add_field(
-                name=f"\u200b", value=f"**Booster Cut:** {self.calculate_cut(int(price))} {self.coin}", inline=False)
+                name=f"\u200b", value=f"**Booster Cut:** {to_k(self.calculate_cut(int(price)))} {self.coin}", inline=False)
             message.add_field(name="Armor Stack\t\t\t\t\t  ",
                               value=self.status(armor), inline=True)
             message.add_field(name="Boost Price\t\t\t\t\t  ",
-                              value=f"{price} {self.coin}", inline=True)
+                              value=f"{to_k(price)} {self.coin}", inline=True)
             message.add_field(name="Number of Boost",
                               value=str(number_of_boost), inline=True)
             message.add_field(name="Realm\t\t\t\t\t  ",
@@ -178,13 +201,14 @@ class Booster(Controller):
             def get():
                 if boosters is not None:
                     for user, _, _ in boosters:
-                        if user in storage.key_:
+                        if user == storage.key:
                             print("got user")
                             return user
 
                 return None
 
             key_user = get()
+            memory.key_user = key_user
 
             print("key user:")
             print(str(key_user))
@@ -338,6 +362,20 @@ class Booster(Controller):
 
                     users = [user for user, _, _ in storage.pre]
 
+                    if len(users) == 0:
+                        message = discord.Embed(
+                            title="Boost failed",
+                            description=f"no volunteer",
+                            color=Color.red()
+
+                        )
+
+                        await admin_post.edit(embed=message)
+                        await admin_post.remove_reaction(self.health_cross, self.bot.user)
+                        await admin_post.remove_reaction(self.helmet_cross, self.bot.user)
+                        await admin_post.remove_reaction(self.war_cross, self.bot.user)
+                        await admin_post.remove_reaction(self.war_double_cross, self.bot.user)             
+
                     print(f"user to give role: \n{users}")
 
                     for user in users:
@@ -376,7 +414,11 @@ class Booster(Controller):
                     message.add_field(
                         name="\t\t\u200b", value=f"{self.brand} All-inOne community", inline=False)
 
-                    await self.send_embed_message(ctx, message)
+                    await admin_post.edit(embed=message)
+                    await admin_post.remove_reaction(self.health_cross, self.bot.user)
+                    await admin_post.remove_reaction(self.helmet_cross, self.bot.user)
+                    await admin_post.remove_reaction(self.war_cross, self.bot.user)
+                    await admin_post.remove_reaction(self.war_double_cross, self.bot.user)
 
                 except Exception as error:
                     print(error)
@@ -569,6 +611,64 @@ class Booster(Controller):
 
                     await asyncio.sleep(2)
 
+            async def commit_transaction():
+
+                print("record transactions..")
+
+                for user, _, _ in storage.pre:
+                    transaction = Transaction()
+                    user_registery = get_user(str(user))[0]
+
+                    transaction.user_id = user_registery.id 
+                    transaction.price = self.calculate_cut(int(price))
+
+                    print("add to session ..")
+                    session.add(transaction)
+
+                print("commit transactions")
+                session.commit()
+                
+            async def commit_boost(failed=False):
+
+                print("record boost..")
+
+                boost = Boost()
+                boost.is_failed =  failed
+                boost.price = price
+                boost.cut = self.calculate_cut(int(price))
+                boost.armor = armor
+                boost.realm = realm
+                boost.char = char
+                boost.required_key = int(key.replace("+", ""))
+                boost.advertiser_id = advertiser_user.id
+                
+                second = False
+
+                for user, code, _ in storage.pre:
+                    user_registery = get_user(str(user))[0]
+
+                    if code == self.health:
+                        boost.healer_id = user_registery.id
+
+                    if code == self.helmet:
+                        boost.tank_id = user_registery.id
+
+                    if code == self.war:
+                        if not second:
+                            boost.dps_1_id = user_registery.id
+                            second = True
+                            continue
+
+                        boost.dps_2_id = user_registery.id
+
+                    if str(user) == str(memory.key_user):
+                        print("giving key in record..")
+                        boost.key_id = user_registery.id
+
+                session.add(boost)
+                session.commit()
+
+
             async def stop():
                 def check_message(message):
                     content: str = message.content
@@ -576,6 +676,9 @@ class Booster(Controller):
 
                 while True:
                     message = await self.bot.wait_for("message", check=check_message)
+
+                    if not message.author.server_permissions.administrator:
+                        continue
 
                     content = message.content
 
@@ -590,24 +693,20 @@ class Booster(Controller):
 
                                 if boost_id == memory.count:
 
-                                    for user in user_memory:
-                                        try:
-                                            await user.remove_roles(memory.role)
-
-                                        except Exception:
-                                            pass
-
                                     await memory.channel.delete()
                                     await memory.role.delete()
+
+                                    await commit_boost()
+                                    await commit_transaction()
+
+                                    message = discord.Embed(
+                                        title="Boost finished",
+                                        description=f"boost finished",
+                                        color=Color.red()
+                                    )
+
+                                    await admin_post.edit(embed=message)
                                     break
-
-                                message = discord.Embed(
-                                    title="Boost finished",
-                                    description=f"boost finished",
-                                    color=Color.red()
-                                )
-
-                                await self.send_embed_message(ctx, message)
 
                             if content.startswith("/fail"):
 
@@ -615,18 +714,23 @@ class Booster(Controller):
 
                                 if boost_id == memory.count:
 
+
+                                    await memory.channel.delete()
+                                    await memory.role.delete()
+
+                                    await commit_boost(failed=True)
+
                                     message = discord.Embed(
                                         title="Boost Failed",
                                         description=f"boost with boost id `{memory.count}` failed",
                                         color=Color.red()
                                     )
 
-                                    await memory.channel.delete()
-                                    await memory.role.delete()
-                                    await self.send_embed_message(ctx, message)
+                                    await admin_post.edit(embed=message)
                                     break
 
-                    except:
+                    except Exception as error:
+                        print(error)
                         pass
 
             self.bot.loop.create_task(add())
@@ -644,10 +748,12 @@ class Booster(Controller):
             await post.add_reaction(self.trigger)
 
             # panel icons
-            await admin_post.add_reaction(self.helmet_cross)
-            await admin_post.add_reaction(self.health_cross)
-            await admin_post.add_reaction(self.war_cross)
+
+            await admin_post.add_reaction(self.helmet_cross),
+            await admin_post.add_reaction(self.health_cross),
+            await admin_post.add_reaction(self.war_cross),
             await admin_post.add_reaction(self.war_double_cross)
+
 
         except ValueError as error:
             print(error)

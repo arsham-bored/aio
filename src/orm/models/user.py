@@ -1,15 +1,19 @@
+from typing import List
 from ..engine import Base, session
 from sqlalchemy import Column, Integer, String, Boolean, Integer
 import logging
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
     def __init__(self):
         super(User, self).__init__()
 
     id = Column('id', Integer, primary_key=True)
+
+    category = Column('category', String)
+
     username = Column('username', String)
     realm = Column('realm', String)
     role = Column('role', String)
@@ -29,3 +33,8 @@ class User(Base):
 
     referer = Column('referer', String)
     info = Column('info', String)
+
+def get_user(username: str) -> List[User]:
+    return session.query(User).filter(
+        User.username == username
+    ).all()

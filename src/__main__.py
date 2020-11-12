@@ -8,5 +8,5 @@ app = create_app()
 
 if __name__ == "__main__":
     migrate()
-    bot.loop.create_task(app.run_task('0.0.0.0', 5000))
+    bot.loop.create_task(app.run_task('0.0.0.0'))
     bot.run(config.token)

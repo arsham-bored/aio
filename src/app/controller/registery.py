@@ -38,6 +38,7 @@ class Registery:
             print(form)
 
             realm = form.get("realm", "")
+            category = form.get("category", "")
             roles = form.get("roles", "")
             userid = form.get("userid", None)
             raider = form.get("raider-link", None)
@@ -47,8 +48,11 @@ class Registery:
             armor = self.Armor(request, form)
             apply = self.Apply(request, form)
 
+
             scraper = RaiderScrapper(raider)
+
             data = await scraper.get_content()
+
             parser = scraper.parse(data)
 
             raider_name = parser.name
@@ -60,7 +64,6 @@ class Registery:
                 User.username == username
             ).all()
 
-            print(query)
 
             if not len(query) == 0:
                 print("yes")
@@ -71,10 +74,10 @@ class Registery:
 
             if raider_name.lower() == username.lower():
                 
-                print("tes")
 
                 user = User()
 
+                user.category = category
                 user.username = userid
                 user.realm = realm
                 user.role = roles
